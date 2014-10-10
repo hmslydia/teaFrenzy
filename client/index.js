@@ -4,18 +4,21 @@ getTime = function(){
 
 Template.addComment.events({
   'click #submitNewComment': function(){
-    var comment = $('#newCommentText').val()
-    console.log(comment)
+    var comment = $('#newCommentText').val().trim()
     
-    $('#newCommentText').val("")
-    
-    Comments.insert({ 
-      comment:comment,
-      user_id: Meteor.userId(),
-      time: getTime(),
-      group_id: null,
-      likes: 0
-    })
+    if(comment != ""){
+      $('#newCommentText').val("")
+      
+      var username = Meteor.users.findOne(Meteor.userId()).emails[0].address.split("@")[0] || "anonymous"
+      Comments.insert({ 
+        comment:comment,
+        user_id: Meteor.userId(),
+        username: username,
+        time: getTime(),
+        group_id: null,
+        likes: 0
+      })
+    }
   } 
 })
 
@@ -25,10 +28,8 @@ Template.listComments.helpers({
     //fetch the usernames from the userId
     _.map(comments, function(comment){
       //userName
-      var userId = Meteor.userId()
-      console.log(userId)
-      var user = Meteor.users.findOne(userId).emails[0].address.split("@")[0] || "anonymous"
-      comment.user = user
+      var username = comment.username
+      comment.user = username
       
       //do you like this
       if(comment.likes > 0){
