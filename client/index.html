@@ -1,0 +1,94 @@
+<template name='home'>
+   <div class='container'>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-6">
+        {{> addComment}}
+        {{> listComments}}
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+</template>
+
+<template name="addComment">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <textarea id="newCommentText" placeholder="Make a comment..."></textarea>
+    </div>
+    <div class="panel-footer clearfix">
+  <div class="btn-group pull-right">
+      <button id="submitNewComment" type="button" class="btn btn-default">Submit</button>
+  </div>
+    </div>
+  </div>
+
+</template>
+
+<template name="listComments">
+{{#each comments}}
+  <div class="panel panel-default">   
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span class="glyphicon glyphicon-user"></span>
+         {{user}}
+      </li>
+      <li class="list-group-item">
+        {{comment}}        
+      </li>
+      <li class="list-group-item">
+      
+      
+      
+        {{#if iLike}}
+          <span class="glyphicon glyphicon-thumbs-up"></span>
+          {{#if hasLikes}}
+            {{#if oneLike}}
+              You and 1 other like this
+            {{else}}
+              You and {{likes}} others like this
+            {{/if}}          
+          {{else}}
+            You like this   
+          {{/if}}  
+          
+              
+        {{else}}
+          <a href="#" class="like">Like</a><br>
+          {{#if hasLikes}}
+          <span class="glyphicon glyphicon-thumbs-up"></span>
+            {{#if oneLike}}
+              1 person likes this
+            {{else}}
+              {{likes}} people like this 
+            {{/if}}
+          {{/if}}
+          
+        {{/if}}        
+      </li>
+    </ul>
+  </div>
+
+
+
+
+  <!--
+  <div>
+    {{user}}: {{comment}}
+    
+    {{#if iLike}}
+      {{#if hasLikes}}
+        {{likes}} people and 
+      {{/if}}      
+      you like this
+    {{else}}
+      {{#if hasLikes}}
+        {{likes}} likes 
+      {{/if}}
+      <button class="like">Like</button>
+    {{/if}}
+  </div>
+  -->
+{{/each}}
+
+</template>
