@@ -27,19 +27,28 @@
 
 <template name="listComments">
 {{#each comments}}
-  <div class="panel panel-default">   
+  <div class="panel panel-default selected_{{selected}}">   
     <ul class="list-group">
-      <li class="list-group-item">
+      <li class="list-group-item list-group-item-warning selected_{{selected}}">
         <span class="glyphicon glyphicon-user"></span>
          {{user}}
       </li>
-      <li class="list-group-item">
+      <li class="list-group-item  selected_{{selected}}">
         {{comment}}        
       </li>
-      <li class="list-group-item">
-      
-      
-      
+      <li class="list-group-item list-group-item-warning selected_{{selected}}">  
+        <span class=" pull-right">
+          {{#if selected}}
+            <a href="#" class="unselect">Unselect</a> 
+          {{else}}
+            {{#if addToTarget}}
+              <a href="#" class="addToThisGroup">Add to this group</a>
+            {{else}}
+              <a href="#" class="group">Add to group</a> 
+            {{/if}}
+          {{/if}}
+        </span> 
+        
         {{#if iLike}}
           <span class="glyphicon glyphicon-thumbs-up"></span>
           {{#if hasLikes}}
@@ -64,31 +73,11 @@
             {{/if}}
           {{/if}}
           
-        {{/if}}        
+        {{/if}} 
+                  
       </li>
     </ul>
   </div>
-
-
-
-
-  <!--
-  <div>
-    {{user}}: {{comment}}
-    
-    {{#if iLike}}
-      {{#if hasLikes}}
-        {{likes}} people and 
-      {{/if}}      
-      you like this
-    {{else}}
-      {{#if hasLikes}}
-        {{likes}} likes 
-      {{/if}}
-      <button class="like">Like</button>
-    {{/if}}
-  </div>
-  -->
 {{/each}}
 
 </template>
