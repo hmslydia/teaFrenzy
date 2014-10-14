@@ -2,22 +2,33 @@ getTime = function(){
   return (new Date()).getTime()
 }
 
+submitNewComment = function(){
+  var comment = $('#newComment').val().trim()
+    
+  if(comment != ""){
+    $('#newComment').val("")
+    
+    var username = Meteor.users.findOne(Meteor.userId()).emails[0].address.split("@")[0] || "anonymous"
+    Comments.insert({ 
+      comment:comment,
+      user_id: Meteor.userId(),
+      username: username,
+      time: getTime(),
+      group_id: null,
+      likes: 0
+    })
+  }  
+}
+
 Template.addComment.events({
   'click #submitNewComment': function(){
-    var comment = $('#newComment').val().trim()
-    
-    if(comment != ""){
-      $('#newComment').val("")
-      
-      var username = Meteor.users.findOne(Meteor.userId()).emails[0].address.split("@")[0] || "anonymous"
-      Comments.insert({ 
-        comment:comment,
-        user_id: Meteor.userId(),
-        username: username,
-        time: getTime(),
-        group_id: null,
-        likes: 0
-      })
+    submitNewComment()
+  },
+  
+  'keypress #newComment': function(e){
+    if(e.charCode == 13){
+      e.stopPropagation()
+      submitNewComment()
     }
   } 
 })
