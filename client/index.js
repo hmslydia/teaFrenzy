@@ -33,10 +33,10 @@ function getCommentData(comment){
   
   //do you like this
   if(comment.likes > 0){
-    var doIlikeThisCount = CommentLikes.find({comment_id: comment._id, user_id: userId}).count()
+    var doIlikeThisCount = CommentLikes.find({comment_id: comment._id, user_id: Meteor.userId()}).count()
     if(doIlikeThisCount> 0){
       comment.iLike = true
-      comment.likes = comment.likes - 1
+      comment.likes = comment.likes //- 1
       comment.hasLikes = (comment.likes > 0)
       comment.oneLike = (comment.likes == 1)
     }else{
