@@ -132,14 +132,17 @@
         {{/if}}
       {{/if}}
     {{else}}
-      <a href="#" class="like">[Like]</a>
+      
       {{#if hasLikes}}
-        [<span class="glyphicon glyphicon-thumbs-up"></span>
+        [ <a href="#" class="like">Like</a>
+          <span class="glyphicon glyphicon-thumbs-up"></span>
         {{#if oneLike}}
           1]<!-- 1 person likes this -->
         {{else}}
           {{likes}}]<!-- {{likes}} people like this -->
         {{/if}}
+      {{else}}
+        [<a href="#" class="like">like</a>]
       {{/if}}
       
     {{/if}}             
@@ -170,17 +173,18 @@
           {{likes}}]<!-- {{likes}} people like this -->
         {{/if}}
       {{/if}}
-    {{else}}
-      <a href="#" class="like">[Like]</a>
+    {{else}}      
       {{#if hasLikes}}
-        [<span class="glyphicon glyphicon-thumbs-up"></span>
+        [<a href="#" class="like">like</a> 
+          <span class="glyphicon glyphicon-thumbs-up"></span>
         {{#if oneLike}}
-          1]<!-- 1 person likes this -->
+          1 ]<!-- 1 person likes this -->
         {{else}}
-          {{likes}}]<!-- {{likes}} people like this -->
+          {{likes}} ]<!-- {{likes}} people like this -->
         {{/if}}
-      {{/if}}
-      
+      {{else}}
+        [<a href="#" class="like">like</a>]
+      {{/if}}     
     {{/if}}             
               
   {{comment}}
