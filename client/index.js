@@ -4,10 +4,10 @@ getTime = function(){
 
 Template.addComment.events({
   'click #submitNewComment': function(){
-    var comment = $('#newCommentText').val().trim()
+    var comment = $('#newComment').val().trim()
     
     if(comment != ""){
-      $('#newCommentText').val("")
+      $('#newComment').val("")
       
       var username = Meteor.users.findOne(Meteor.userId()).emails[0].address.split("@")[0] || "anonymous"
       Comments.insert({ 

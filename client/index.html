@@ -12,17 +12,14 @@
 </template>
 
 <template name="addComment">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <textarea id="newCommentText" placeholder="Make a comment..."></textarea>
-    </div>
-    <div class="panel-footer clearfix">
-  <div class="btn-group pull-right">
-      <button id="submitNewComment" type="button" class="btn btn-default">Submit</button>
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="Make a comment..." id="newComment">
+    <span class="input-group-btn">
+      <button type="button" class="btn btn-default" id="submitNewComment" >
+        Submit
+      </button>
+    </span>
   </div>
-    </div>
-  </div>
-
 </template>
 
 <template name="listComments">
