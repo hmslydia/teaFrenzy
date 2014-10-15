@@ -90,22 +90,15 @@
 
 <template name="group">
   <div class="groupBox">
+    <div class="groupControls">
+      <a href="#" class="addToThisGroup">[group with]</a>
+    </div>
+    <div class='groupComments'>
     {{#each comments}}
       {{> commentInGroup}}
     {{/each}}
-  </div>
-  <!--
-  <div class="panel panel-primary selected_{{selected}}">
-    <div class="panel-heading">
-      <h3 class="panel-title">{{name}}</h3>
-    </div>
-    <div class="panel-body">
-      {{#each comments}}
-        {{> commentInGroup}}
-      {{/each}}
     </div>
   </div>
-  -->
 </template>
 
 
@@ -116,7 +109,7 @@
       <a href="#" class="unselect">[Unselect]</a> 
     {{else}}
       {{#if addToTarget}}
-        <a href="#" class="addToThisGroup">[Add here]</a>
+        <a href="#" class="createGroup">[group with]</a>
       {{else}}
         <a href="#" class="group">[move]</a> 
       {{/if}}
@@ -157,11 +150,13 @@
     {{#if selected}}
       <a href="#" class="unselect">Unselect</a> 
     {{else}}
+      <!--
       {{#if addToTarget}}
-        <a href="#" class="addToThisGroup">Add here</a>
+        <a href="#" class="addToThisGroup">[group with]</a>
       {{else}}
         <a href="#" class="group">[move]</a> 
       {{/if}}
+      -->
     {{/if}}
     
     {{#if iLike}}  

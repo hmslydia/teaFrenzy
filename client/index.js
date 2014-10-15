@@ -72,7 +72,6 @@ Template.listComments.helpers({
       })
       return group
     })
-    console.log(groups)
   
     var comments = Comments.find({group_id: null}, {sort: {time: -1}}).fetch()
     //fetch the usernames from the userId
@@ -82,7 +81,6 @@ Template.listComments.helpers({
     })
     
     var allComments = groups.concat(comments)
-    console.log(allComments)
     return allComments
   }
 })
@@ -115,7 +113,8 @@ Template.listComments.events({
     Session.set('selected_comment_id', comment_id)    
   },
   
-  'click .addToThisGroup': function(){
+  'click .createGroup': function(){
+    //singleton target, singleton source
     var target_comment_id = this._id
     var mode = Session.get('mode')
     var source_comment_id = Session.get('selected_comment_id') 
@@ -126,9 +125,6 @@ Template.listComments.events({
 
 
     if(mode == "addToGroup"){
-      //BOTH comments are strays
-      if(targetComment.group_id == null && sourceComment.group_id == null){
-        //create a group
         var numGroups = Groups.find().count()
         var group_id = Groups.insert({
           name: "Group "+numGroups,
@@ -137,38 +133,38 @@ Template.listComments.events({
         //add both comments to that new group
         Comments.update(target_comment_id, {$set: {group_id: group_id}})
         Comments.update(source_comment_id, {$set: {group_id: group_id}})
-      }
-
-      //One comment is stray
-      if((targetComment.group_id == null && sourceComment.group_id != null) || (targetComment.group_id != null && sourceComment.group_id == null)){
-        //create a group
         
-        //For the group comment, find the group_id
-        if(targetComment.group_id == null){
-          var group_id = sourceComment.group_id
-          var stray_comment_id = targetComment._id
-          
-          //set the target comment's group_id 
-          Comments.update(target_comment_id, {$set: {group_id: group_id}})
-          
-          //add the comment_id to the group
-          Groups.update(group_id, {$push: {comment_ids: target_comment_id}} )
-          
-        }
+        Session.set('selected_comment_id', "") 
+        Session.set('mode', "")  
+    }      
+  },
+  
+  'click .addToThisGroup': function(){
+    var mode = Session.get('mode')
+    var source_comment_id = Session.get('selected_comment_id') 
+    var group_id = this._id
+    
+    
+    if(mode == "addToGroup"){
+      //The source could be in a group or not, the target must be a group
+      //if the source IS in a group, then we want to remvoe it from that group, and if that group is now empty, to destroy that group.
+      //CURRENTLY source comments cannot be from groups, so we don't need to worry about that
+      moveCommentToGroup(source_comment_id, group_id)
 
-        if(sourceComment.group_id == null){
-          var group_id = targetComment.group_id
-          var stray_comment_id = sourceComment._id
-          
-          //set the target comment's group_id 
-          Comments.update(stray_comment_id, {$set: {group_id: group_id}})
-          
-          //add the comment_id to the group
-          Groups.update(group_id, {$push: {comment_ids: stray_comment_id}} )
-        }        
-        
-      }
+     
            
     }    
   } 
 })
+
+moveCommentToGroup = function(comment_id, group_id){  
+  //set the source comment's group_id 
+  Comments.update(comment_id, {$set: {group_id: group_id}})
+  
+  //add source comment_id to the group
+  Groups.update(group_id, {$push: {comment_ids: comment_id}} )
+  Session.set('selected_comment_id', "")  
+  Session.set('mode', "")            
+}
+
+
