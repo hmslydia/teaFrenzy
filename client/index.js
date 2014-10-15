@@ -81,6 +81,7 @@ Template.listComments.helpers({
     })
     
     var allComments = groups.concat(comments)
+   allComments =  _.sortBy(allComments, function(obj){ return -1 * obj.time; });
     return allComments
   }
 })
@@ -123,12 +124,14 @@ Template.listComments.events({
     var targetComment = Comments.findOne(target_comment_id)
     var sourceComment = Comments.findOne(source_comment_id)
 
+    var targetCommentTime = targetComment.time
 
     if(mode == "addToGroup"){
         var numGroups = Groups.find().count()
         var group_id = Groups.insert({
           name: "Group "+numGroups,
-          comment_ids: [target_comment_id, source_comment_id]
+          comment_ids: [target_comment_id, source_comment_id],
+          time: targetCommentTime //getTime()
         })
         //add both comments to that new group
         Comments.update(target_comment_id, {$set: {group_id: group_id}})
@@ -142,17 +145,13 @@ Template.listComments.events({
   'click .addToThisGroup': function(){
     var mode = Session.get('mode')
     var source_comment_id = Session.get('selected_comment_id') 
-    var group_id = this._id
-    
+    var group_id = this._id   
     
     if(mode == "addToGroup"){
       //The source could be in a group or not, the target must be a group
       //if the source IS in a group, then we want to remvoe it from that group, and if that group is now empty, to destroy that group.
       //CURRENTLY source comments cannot be from groups, so we don't need to worry about that
-      moveCommentToGroup(source_comment_id, group_id)
-
-     
-           
+      moveCommentToGroup(source_comment_id, group_id)       
     }    
   } 
 })
@@ -167,4 +166,9 @@ moveCommentToGroup = function(comment_id, group_id){
   Session.set('mode', "")            
 }
 
+Template.group.helpers({
+  selected: function(){
+    return ( Session.get('mode') == 'addToGroup')
+  }
+})
 

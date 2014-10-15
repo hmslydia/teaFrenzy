@@ -29,59 +29,6 @@
       {{> group}}  
     {{else}}
       {{> comment}}
-    <!--
-    <div class="panel panel-default selected_{{selected}}">
-      <ul class="list-group">
-        <li class="list-group-item list-group-item-warning selected_{{selected}}">
-          <span class="glyphicon glyphicon-user"></span>
-           {{user}}
-        </li>
-        <li class="list-group-item  selected_{{selected}}">
-          {{comment}}        
-        </li>
-        <li class="list-group-item list-group-item-warning selected_{{selected}}">  
-          <span class=" pull-right">
-            {{#if selected}}
-              <a href="#" class="unselect">Unselect</a> 
-            {{else}}
-              {{#if addToTarget}}
-                <a href="#" class="addToThisGroup">Add to this group</a>
-              {{else}}
-                <a href="#" class="group">Add to group</a> 
-              {{/if}}
-            {{/if}}
-          </span> 
-          
-          {{#if iLike}}
-            <span class="glyphicon glyphicon-thumbs-up"></span>
-            {{#if hasLikes}}
-              {{#if oneLike}}
-                You and 1 other like this
-              {{else}}
-                You and {{likes}} others like this
-              {{/if}}          
-            {{else}}
-              You like this   
-            {{/if}}  
-            
-                
-          {{else}}
-            <a href="#" class="like">Like</a><br>
-            {{#if hasLikes}}
-            <span class="glyphicon glyphicon-thumbs-up"></span>
-              {{#if oneLike}}
-                1 person likes this
-              {{else}}
-                {{likes}} people like this 
-              {{/if}}
-            {{/if}}
-            
-          {{/if}} 
-                    
-        </li>
-      </ul>
-      </div>
-      -->
     {{/if}}
   
 {{/each}}
@@ -91,7 +38,11 @@
 <template name="group">
   <div class="groupBox">
     <div class="groupControls">
+      {{name}}
+      
+      {{#if selected}}
       <a href="#" class="addToThisGroup">[group with]</a>
+      {{/if}}
     </div>
     <div class='groupComments'>
     {{#each comments}}

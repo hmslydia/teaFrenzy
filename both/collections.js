@@ -10,6 +10,7 @@ Groups = new Meteor.Collection("groups")
 /*
 Name
 comment_ids; []
+time:
 */
 
 CommentLikes = new Meteor.Collection("commentLikes")

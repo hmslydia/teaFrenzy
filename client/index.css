@@ -29,3 +29,7 @@
 .unselect{
   color: red;
 }
+
+.groupControls{
+  border-bottom: 1px solid black;
+}
