@@ -124,6 +124,11 @@ Template.listComments.events({
     Session.set('selected_comment_id', comment_id)
   },
   
+  'click .ungroup': function(){
+    var comment_id = this._id
+    ungroup(comment_id)
+  },
+  
   'click .unselect': function(){
     var comment_id = this._id
     Session.set('mode', 'list')
@@ -242,17 +247,35 @@ moveCommentFromGroupToSingleton = function(group_comment_id, comment_id){
   
   //IF THE GROUP THE COMMENT CAME FROM HAS NOTHING LEFT, 
   //GET RID OF THAT GROUP  
-  var originalGroup = Groups.findOne(originalGroupId) 
+  //var originalGroup = Groups.findOne(originalGroupId) 
      
+  removeCommentFromGroup(originalGroupId, group_comment_id)
+  
+  Session.set('selected_comment_id', "")  
+  Session.set('mode', "")     
+}
+
+removeCommentFromGroup = function(originalGroupId, group_comment_id){
+  console.log(originalGroupId)
+  var originalGroup = Groups.findOne(originalGroupId)
   var numComments = originalGroup.comment_ids.length
   if (numComments == 1){
     Groups.remove({_id: originalGroupId}) 
   } else {
     Groups.update(originalGroupId, {$pull: {comment_ids: group_comment_id}})    
-  } 
+  }   
+}
+
+ungroup = function(group_comment_id){
+  var comment = Comments.findOne(group_comment_id)
+  var originalGroupId = comment.group_id  
+  
+  Comments.update(group_comment_id, {$set: {group_id: null}}) // set a time?  
+  
+  removeCommentFromGroup(originalGroupId, group_comment_id)
   
   Session.set('selected_comment_id', "")  
-  Session.set('mode', "")     
+  Session.set('mode', "")    
 }
 
 Template.group.helpers({
