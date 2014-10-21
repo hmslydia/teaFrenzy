@@ -2,6 +2,9 @@
   -webkit-column-count: 2 ;/* Chrome, Safari, Opera */
   -moz-column-count: 2 ;/* Firefox */
   column-count: 2 ;
+  
+  margin-top: 10px;
+  margin-bottom:10px;
   margin-left: 50px;
   margin-right: 50px;
 }
@@ -9,6 +12,19 @@
 #newCommentText{
   width: 100%;
   border: 0px;
+}
+#newCommentContainer{
+  margin-left: 50px;
+  margin-right: 50px;
+}
+#newComment{
+  width: 600px;
+  height: 100px;
+}
+
+#submitNewComment{
+  height: 100px;
+  padding: 10px;
 }
 
 .list-group-item.selected_true{
