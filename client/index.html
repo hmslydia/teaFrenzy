@@ -57,21 +57,32 @@
     <div class="groupControls">
       {{name}}
       
-      {{#if selected}}
-      <a href="#" class="addToThisGroup">[group with]</a>
+      {{#if dropTarget}}
+        <a href="#" class="addToThisGroup">[group with]</a>
+      {{else}}
+        <a href="#" class="editThisGroup">[edit]</a>
       {{/if}}
     </div>
-    <div class='groupComments'>
-    {{#each comments}}
-      {{> commentInGroup}}
-    {{/each}}
-    </div>
+    {{#if editing}}
+      <div class='groupComments'>
+      {{#each comments}}
+        {{> editingCommentInGroup}}
+      {{/each}}
+      </div>
+    {{else}}
+    
+      <div class='groupComments'>
+      {{#each comments}}
+        {{> commentInGroup}}
+      {{/each}}
+      </div>
+    {{/if}}
   </div>
 </template>
 
 
 <template name="comment">
-  <div class="comment groupBox">
+  <div class="comment">
   
     {{#if selected}}
       <a href="#" class="unselect">[Unselect]</a> 
@@ -79,7 +90,7 @@
       {{#if addToTarget}}
         <a href="#" class="createGroup">[group with]</a>
       {{else}}
-        <a href="#" class="group">[move]</a> 
+        <a href="#" class="moveToGroup">[move]</a> 
       {{/if}}
     {{/if}}
     
@@ -150,6 +161,20 @@
       {{/if}}     
     {{/if}}             
               
+  {{comment}}
+</div> 
+
+</template>
+
+
+<template name="editingCommentInGroup">
+  <div id="comment">
+  {{#if selected}}
+      <a href="#" class="unselect">[Unselect]</a>   
+  {{else}}
+    [<a href="#" class="moveFromGroup">move</a>] 
+    [<a href="#" class="ungroup">ungroup</a>]           
+  {{/if}}     
   {{comment}}
 </div> 
 

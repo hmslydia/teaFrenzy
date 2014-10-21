@@ -38,9 +38,18 @@ function getCommentData(comment){
   var username = comment.username
   comment.isGroup = false
   comment.user = username
-  comment.selected = (( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') == comment._id))
+  comment.selected = (
+    ( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') == comment._id)
+    ||
+    ( Session.get('mode') == 'moveFromGroup') && (Session.get('selected_comment_id') == comment._id)    
+    )
   
-  comment.addToTarget = (( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') != comment._id))
+  comment.addToTarget = (
+    ( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') != comment._id)
+    ||
+      (Session.get('mode') == 'moveFromGroup')
+    
+    ) 
   
   //do you like this
   if(comment.likes > 0){
@@ -101,10 +110,17 @@ Template.listComments.events({
     })
   },
   
-  'click .group': function(){
+  'click .moveToGroup': function(){
     //console.log(this)
     var comment_id = this._id
     Session.set('mode', 'addToGroup')
+    Session.set('selected_comment_id', comment_id)
+  },
+  
+  'click .moveFromGroup': function(){
+    //console.log(this)
+    var comment_id = this._id
+    Session.set('mode', 'moveFromGroup')
     Session.set('selected_comment_id', comment_id)
   },
   
@@ -127,19 +143,18 @@ Template.listComments.events({
     var targetCommentTime = targetComment.time
 
     if(mode == "addToGroup"){
-        var numGroups = Groups.find().count()
-        var group_id = Groups.insert({
-          name: "Group "+numGroups,
-          comment_ids: [target_comment_id, source_comment_id],
-          time: targetCommentTime //getTime()
-        })
-        //add both comments to that new group
-        Comments.update(target_comment_id, {$set: {group_id: group_id}})
-        Comments.update(source_comment_id, {$set: {group_id: group_id}})
+      newGroup(target_comment_id, source_comment_id)
+
         
         Session.set('selected_comment_id', "") 
         Session.set('mode', "")  
-    }      
+    } 
+    if (mode == "moveFromGroup"){
+      var singleton_comment_id = this._id
+      var mode = Session.get('mode')
+      var group_comment_id = Session.get('selected_comment_id')       
+      moveCommentFromGroupToSingleton(group_comment_id, singleton_comment_id)
+    }     
   },
   
   'click .addToThisGroup': function(){
@@ -152,9 +167,34 @@ Template.listComments.events({
       //if the source IS in a group, then we want to remvoe it from that group, and if that group is now empty, to destroy that group.
       //CURRENTLY source comments cannot be from groups, so we don't need to worry about that
       moveCommentToGroup(source_comment_id, group_id)       
-    }    
+    } 
+    if(mode == "moveFromGroup"){
+      //The source could be in a group or not, the target must be a group
+      //if the source IS in a group, then we want to remvoe it from that group, and if that group is now empty, to destroy that group.
+      //CURRENTLY source comments cannot be from groups, so we don't need to worry about that
+      moveCommentFromGroupToGroup(source_comment_id, group_id)       
+    } 
+       
+  },
+  
+  'click .editThisGroup': function(){
+    var group_id = this._id
+    Session.set('mode', 'editingGroup')
+    Session.set('selected_group_id', group_id)    
   } 
 })
+
+newGroup = function(target_comment_id, source_comment_id, targetCommentTime){
+  var numGroups = Groups.find().count()
+  var group_id = Groups.insert({
+    name: "Group "+numGroups,
+    comment_ids: [target_comment_id, source_comment_id],
+    time: targetCommentTime || getTime()
+  })
+  //add both comments to that new group
+  Comments.update(target_comment_id, {$set: {group_id: group_id}})
+  Comments.update(source_comment_id, {$set: {group_id: group_id}})
+}
 
 moveCommentToGroup = function(comment_id, group_id){  
   //set the source comment's group_id 
@@ -166,9 +206,67 @@ moveCommentToGroup = function(comment_id, group_id){
   Session.set('mode', "")            
 }
 
+moveCommentFromGroupToGroup = function(comment_id, group_id){  
+  var comment = Comments.findOne(comment_id)
+  var originalGroupId = comment.group_id
+  //set the source comment's group_id 
+  Comments.update(comment_id, {$set: {group_id: group_id}})
+  
+  //add source comment_id to the group
+  Groups.update(group_id, {$push: {comment_ids: comment_id}} )
+
+
+  
+  //IF THE GROUP THE COMMENT CAME FROM HAS NOTHING LEFT, 
+  //GET RID OF THAT GROUP  
+  var originalGroup = Groups.findOne(originalGroupId) 
+     
+  var numComments = originalGroup.comment_ids.length
+  if (numComments == 1){
+    Groups.remove({_id: originalGroupId}) 
+  } else {
+    Groups.update(originalGroupId, {$pull: {comment_ids: comment_id}})    
+  } 
+  
+  Session.set('selected_comment_id', "")  
+  Session.set('mode', "")         
+}
+
+moveCommentFromGroupToSingleton = function(group_comment_id, comment_id){
+  var comment = Comments.findOne(group_comment_id)
+  var originalGroupId = comment.group_id
+  
+  //add source comment_id to the group
+  //Groups.update(group_id, {$push: {comment_ids: comment_id}} )
+  newGroup(group_comment_id, comment_id)
+  
+  //IF THE GROUP THE COMMENT CAME FROM HAS NOTHING LEFT, 
+  //GET RID OF THAT GROUP  
+  var originalGroup = Groups.findOne(originalGroupId) 
+     
+  var numComments = originalGroup.comment_ids.length
+  if (numComments == 1){
+    Groups.remove({_id: originalGroupId}) 
+  } else {
+    Groups.update(originalGroupId, {$pull: {comment_ids: group_comment_id}})    
+  } 
+  
+  Session.set('selected_comment_id', "")  
+  Session.set('mode', "")     
+}
+
 Template.group.helpers({
-  selected: function(){
-    return ( Session.get('mode') == 'addToGroup')
+  dropTarget: function(){
+    return ( Session.get('mode') == 'addToGroup') || ( Session.get('mode') == 'moveFromGroup')
+  },
+  
+  editing: function(){
+    return ( Session.get('mode') == 'editingGroup') && ( Session.get('selected_group_id') == this._id)
   }
 })
+
+
+
+
+
 
