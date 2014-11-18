@@ -10,6 +10,7 @@ submitNewComment = function(){
     
     var username = Meteor.users.findOne(Meteor.userId()).emails[0].address.split("@")[0] || "anonymous"
     Comments.insert({ 
+      page_id: Router.current().params._id,
       comment:comment,
       user_id: Meteor.userId(),
       username: username,
@@ -105,6 +106,7 @@ Template.listComments.events({
     Comments.update(comment_id, {$inc: {likes: 1}})
     
     CommentLikes.insert({
+      page_id: Router.current().params._id,
       comment_id: comment_id,
       user_id: user_id
     })
@@ -192,6 +194,7 @@ Template.listComments.events({
 newGroup = function(target_comment_id, source_comment_id, targetCommentTime){
   var numGroups = Groups.find().count()
   var group_id = Groups.insert({
+    page_id: Router.current().params._id,
     name: "Group "+numGroups,
     comment_ids: [target_comment_id, source_comment_id],
     time: targetCommentTime || getTime()
