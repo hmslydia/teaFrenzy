@@ -10,7 +10,7 @@ page_id:
 user_id:
 comment: //html
 time:
-group_id
+group_id: 
 */
 
 Groups = new Meteor.Collection("groups")
@@ -19,6 +19,7 @@ page_id:
 Name
 comment_ids; []
 time:
+//color: 
 */
 
 CommentLikes = new Meteor.Collection("commentLikes")

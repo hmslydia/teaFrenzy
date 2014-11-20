@@ -9,6 +9,16 @@
   margin-right: 50px;
 }
 
+
+.moveContainer{
+  display: inline-block;
+  width: 3em;
+}
+.likeContainer{
+  display: inline-block;
+  width: 3em;
+}
+
 #newCommentText{
   width: 100%;
   border: 0px;

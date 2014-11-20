@@ -34,11 +34,18 @@ Template.addComment.events({
   } 
 })
 
+function getGroupColor(group_id){
+  return Groups.findOne(group_id).color
+}
+
 function getCommentData(comment){
   //userName
   var username = comment.username
-  comment.isGroup = false
+  var group_id = comment.group_id || false
+
+  comment.color = group_id ? getGroupColor(group_id) : 'white'//comment.color
   comment.user = username
+  
   comment.selected = (
     ( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') == comment._id)
     ||
@@ -71,6 +78,7 @@ function getCommentData(comment){
 
 Template.listComments.helpers({
   comments: function(){
+    /*
     var groups = Groups.find().fetch()
     _.map(groups, function(group){
       group.isGroup = true
@@ -82,15 +90,15 @@ Template.listComments.helpers({
       })
       return group
     })
-  
-    var comments = Comments.find({group_id: null}, {sort: {time: -1}}).fetch()
+    */
+    var comments = Comments.find({/*group_id: null*/}, {sort: {time: -1}}).fetch()
     //fetch the usernames from the userId
     _.map(comments, function(comment){
       return getCommentData(comment)
       
     })
     
-    var allComments = groups.concat(comments)
+    var allComments = comments //groups.concat(comments)
    allComments =  _.sortBy(allComments, function(obj){ return -1 * obj.time; });
     return allComments
   }
@@ -191,13 +199,26 @@ Template.listComments.events({
   } 
 })
 
+colors = [
+'#F26C4F',
+'#FBAF5C',
+'#FFF467',
+'#ACD372',
+'#3BB878',
+'#00BFF3',
+'#855FA8',
+'#F06EA9'
+]
+
 newGroup = function(target_comment_id, source_comment_id, targetCommentTime){
   var numGroups = Groups.find().count()
+  var colorNum = numGroups  % 7
   var group_id = Groups.insert({
     page_id: Router.current().params._id,
     name: "Group "+numGroups,
     comment_ids: [target_comment_id, source_comment_id],
-    time: targetCommentTime || getTime()
+    time: targetCommentTime || getTime(),
+    color: colors[colorNum]
   })
   //add both comments to that new group
   Comments.update(target_comment_id, {$set: {group_id: group_id}})

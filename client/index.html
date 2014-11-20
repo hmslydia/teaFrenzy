@@ -84,41 +84,45 @@
 <template name="comment">
   <div class="comment">
   
-    {{#if selected}}
-      <a href="#" class="unselect">[Unselect]</a> 
-    {{else}}
-      {{#if addToTarget}}
-        <a href="#" class="createGroup">[group with]</a>
+    <span class="moveContainer" style="background-color: {{color}}">
+      {{#if selected}}
+        <a href="#" class="unselect" > [undo]</a> <!-- [Unselect]</a> -->
       {{else}}
-        <a href="#" class="moveToGroup">[move]</a> 
+        {{#if addToTarget}}
+          <a href="#" class="createGroup"> [this]</a> <!--[group with]</a> -->
+        {{else}}
+          <a href="#" class="moveToGroup"> [dupe]</a> <!--[move]</a> -->
+        {{/if}}
       {{/if}}
-    {{/if}}
+    </span>
     
-    {{#if iLike}}  
-      {{#if hasLikes}}
-        [<span class="glyphicon glyphicon-thumbs-up"></span>
-        {{#if oneLike}}
-          1]<!-- 1 person likes this -->
-        {{else}}
-          {{likes}}]<!-- {{likes}} people like this -->
-        {{/if}}
-      {{/if}}
-    {{else}}
-      
-      {{#if hasLikes}}
-        [ <a href="#" class="like">Like</a>
-          <span class="glyphicon glyphicon-thumbs-up"></span>
-        {{#if oneLike}}
-          1]<!-- 1 person likes this -->
-        {{else}}
-          {{likes}}]<!-- {{likes}} people like this -->
+    <span class="likeContainer">
+      {{#if iLike}}  
+        {{#if hasLikes}}
+          [<span class="glyphicon glyphicon-thumbs-up"></span>
+          {{#if oneLike}}
+            1]<!-- 1 person likes this -->
+          {{else}}
+            {{likes}}]<!-- {{likes}} people like this -->
+          {{/if}}
         {{/if}}
       {{else}}
-        [<a href="#" class="like">like</a>]
-      {{/if}}
-      
-    {{/if}}             
-                  
+        
+        {{#if hasLikes}}
+           <a href="#" class="like">[Like</a>
+            <span class="glyphicon glyphicon-thumbs-up"></span>
+          {{#if oneLike}}
+            1]<!-- 1 person likes this -->
+          {{else}}
+            {{likes}}]<!-- {{likes}} people like this -->
+          {{/if}}
+          
+        {{else}}
+          <a href="#" class="like">[like]</a>
+        {{/if}}
+        
+      {{/if}}             
+    </span>             
     {{comment}}
   </div> 
 
