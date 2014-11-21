@@ -199,6 +199,7 @@ Template.listComments.events({
   } 
 })
 
+/*
 colors = [
 '#F26C4F',
 '#FBAF5C',
@@ -208,6 +209,17 @@ colors = [
 '#00BFF3',
 '#855FA8',
 '#F06EA9'
+]
+*/
+colors = [
+'#f9b8aa',
+'#fdd5a9',
+'#FFF8a2',
+'#d8eabd',
+/*'#bbe9d1',*/
+'#a5ecff',
+'#d3c5df',
+/* '#f9c7de'*/
 ]
 
 newGroup = function(target_comment_id, source_comment_id, targetCommentTime){
