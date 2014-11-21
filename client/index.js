@@ -26,9 +26,9 @@ Template.addComment.events({
     submitNewComment()
   },
   
-  'keypress #newComment': function(e){
-    if(e.charCode == 13){
-      e.stopPropagation()
+  'keypress #newComment': function(event){
+    if(event.charCode == 13){
+      event.preventDefault()
       submitNewComment()
     }
   } 
