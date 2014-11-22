@@ -127,13 +127,97 @@ Template.listComments.events({
     Session.set('selected_comment_id', comment_id)
   },
   
+  'click .unselect': function(){
+    var comment_id = this._id
+    Session.set('mode', 'list')
+    Session.set('selected_comment_id', comment_id)    
+  },
+  
+  'click .createGroup': function(){
+    //singleton target, singleton source
+    
+    var target_comment_id = this._id
+    var mode = Session.get('mode')
+    var source_comment_id = Session.get('selected_comment_id') 
+    
+    console.log('target_comment_id '+target_comment_id)
+    console.log('source_comment_id'+source_comment_id)
+    
+    
+    //figure out if the comments are strays or in groups
+    var targetComment = Comments.findOne(target_comment_id)
+    var sourceComment = Comments.findOne(source_comment_id)
+
+    var targetCommentTime = targetComment.time
+
+    var targetGroupId = targetComment.group_id
+    var sourceGroupId = sourceComment.group_id
+    
+    if (targetGroupId === null && sourceGroupId === null){
+      newGroup(target_comment_id, source_comment_id)  
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")       
+    }
+    if (!(targetGroupId === null) && sourceGroupId === null){
+      //newGroup(target_comment_id, source_comment_id)  
+      moveCommentToGroup(source_comment_id, targetGroupId) 
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")       
+    }
+    if (targetGroupId === null && !(sourceGroupId === null)){
+      //newGroup(target_comment_id, source_comment_id)  
+      moveCommentToGroup(target_comment_id, sourceGroupId) 
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")       
+    }
+
+    if (!(targetGroupId === null) && !(sourceGroupId === null)){
+      //if the groups are the same, do nothing.
+      if (targetGroupId == sourceGroupId){
+        //do nothing
+      } else {
+        moveCommentToGroup(source_comment_id, targetGroupId) 
+      }
+      
+       
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")       
+    }
+
+    /*
+    if(mode == "addToGroup"){
+      newGroup(target_comment_id, source_comment_id)
+
+        
+        Session.set('selected_comment_id', "") 
+        Session.set('mode', "")  
+    } 
+    if (mode == "moveFromGroup"){
+      var singleton_comment_id = this._id
+      var mode = Session.get('mode')
+      var group_comment_id = Session.get('selected_comment_id')       
+      moveCommentFromGroupToSingleton(group_comment_id, singleton_comment_id)
+    } 
+    */    
+  },  
+  
+  /*
+  'click .moveToGroup': function(){
+    //console.log(this)
+    var comment_id = this._id
+    Session.set('mode', 'addToGroup')
+    Session.set('selected_comment_id', comment_id)
+  },
+  
+  //Used for explicit groups 
   'click .moveFromGroup': function(){
     //console.log(this)
     var comment_id = this._id
     Session.set('mode', 'moveFromGroup')
     Session.set('selected_comment_id', comment_id)
   },
-  
+
+  //Used for explicit groups
   'click .ungroup': function(){
     var comment_id = this._id
     ungroup(comment_id)
@@ -192,11 +276,13 @@ Template.listComments.events({
        
   },
   
+  //Used for explicit groups
   'click .editThisGroup': function(){
     var group_id = this._id
     Session.set('mode', 'editingGroup')
     Session.set('selected_group_id', group_id)    
   } 
+  */
 })
 
 /*
