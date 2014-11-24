@@ -21,6 +21,16 @@ submitNewComment = function(){
   }  
 }
 
+Template.standardLayout.events({
+  'click': function(){
+      //deselect
+      console.log('bg')
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")     
+    
+  }
+})
+
 Template.addComment.events({
   'click #submitNewComment': function(){
     submitNewComment()
@@ -45,6 +55,7 @@ function getCommentData(comment){
 
   comment.color = group_id ? getGroupColor(group_id) : 'white'//comment.color
   comment.user = username
+  comment.mine = (comment.user_id == Meteor.userId())
   
   comment.selected = (
     ( Session.get('mode') == 'addToGroup') && (Session.get('selected_comment_id') == comment._id)
@@ -122,6 +133,8 @@ Template.listComments.events({
   
   'click .moveToGroup': function(){
     //console.log(this)
+    event.stopPropagation();
+    
     var comment_id = this._id
     Session.set('mode', 'addToGroup')
     Session.set('selected_comment_id', comment_id)
@@ -129,12 +142,21 @@ Template.listComments.events({
   
   'click .unselect': function(){
     var comment_id = this._id
-    Session.set('mode', 'list')
-    Session.set('selected_comment_id', comment_id)    
+    
+    //if it's in a group, remove it. 
+    var comment = Comments.findOne(comment_id)
+    if(comment.group_id != null){
+      ungroup(comment_id)   
+    } else {
+      Session.set('selected_comment_id', "") 
+      Session.set('mode', "")        
+    }
   },
   
-  'click .createGroup': function(){
+  'click .createGroup': function(event){
     //singleton target, singleton source
+    event.stopPropagation();
+    console.log('create group')
     
     var target_comment_id = this._id
     var mode = Session.get('mode')
@@ -152,13 +174,18 @@ Template.listComments.events({
 
     var targetGroupId = targetComment.group_id
     var sourceGroupId = sourceComment.group_id
+
+    console.log('targetGroupId '+targetGroupId)
+    console.log('sourceGroupId ' + sourceGroupId)
     
     if (targetGroupId === null && sourceGroupId === null){
+      console.log('NULL, NULL')
       newGroup(target_comment_id, source_comment_id)  
       Session.set('selected_comment_id', "") 
       Session.set('mode', "")       
     }
     if (!(targetGroupId === null) && sourceGroupId === null){
+      console.log('target, NULL source')
       //newGroup(target_comment_id, source_comment_id)  
       moveCommentToGroup(source_comment_id, targetGroupId) 
       Session.set('selected_comment_id', "") 
@@ -166,6 +193,7 @@ Template.listComments.events({
     }
     if (targetGroupId === null && !(sourceGroupId === null)){
       //newGroup(target_comment_id, source_comment_id)  
+      console.log('NULL target, source')
       moveCommentToGroup(target_comment_id, sourceGroupId) 
       Session.set('selected_comment_id', "") 
       Session.set('mode', "")       
@@ -175,7 +203,9 @@ Template.listComments.events({
       //if the groups are the same, do nothing.
       if (targetGroupId == sourceGroupId){
         //do nothing
+        console.log('same group')
       } else {
+        console.log('target, source')
         moveCommentToGroup(source_comment_id, targetGroupId) 
       }
       
@@ -358,7 +388,7 @@ moveCommentFromGroupToGroup = function(comment_id, group_id){
   Session.set('selected_comment_id', "")  
   Session.set('mode', "")         
 }
-
+/*
 moveCommentFromGroupToSingleton = function(group_comment_id, comment_id){
   var comment = Comments.findOne(group_comment_id)
   var originalGroupId = comment.group_id
@@ -376,9 +406,14 @@ moveCommentFromGroupToSingleton = function(group_comment_id, comment_id){
   Session.set('selected_comment_id', "")  
   Session.set('mode', "")     
 }
-
+*/
 removeCommentFromGroup = function(originalGroupId, group_comment_id){
-  console.log(originalGroupId)
+  //console.log(originalGroupId)
+  //update comment
+  Comments.update(group_comment_id, {$set: {group_id : null}})
+  
+  
+  //update or remove group
   var originalGroup = Groups.findOne(originalGroupId)
   var numComments = originalGroup.comment_ids.length
   if (numComments == 1){
@@ -388,13 +423,13 @@ removeCommentFromGroup = function(originalGroupId, group_comment_id){
   }   
 }
 
-ungroup = function(group_comment_id){
-  var comment = Comments.findOne(group_comment_id)
+ungroup = function(comment_id){
+  var comment = Comments.findOne(comment_id)
   var originalGroupId = comment.group_id  
   
-  Comments.update(group_comment_id, {$set: {group_id: null}}) // set a time?  
+  Comments.update(comment_id, {$set: {group_id: null}}) // set a time?  
   
-  removeCommentFromGroup(originalGroupId, group_comment_id)
+  removeCommentFromGroup(originalGroupId, comment_id)
   
   Session.set('selected_comment_id', "")  
   Session.set('mode', "")    
